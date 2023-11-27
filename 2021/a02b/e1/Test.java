@@ -3,9 +3,6 @@ package a02b.e1;
 import static a02b.e1.UniversityProgram.Sector.*;
 import static org.junit.Assert.*;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.Set;
 
 public class Test {
@@ -46,7 +43,7 @@ public class Test {
 	
 	@org.junit.Before
 	public void initFactory() {
-		// this.factory = new UniversityProgramFactoryImpl();
+		this.factory = new UniversityProgramFactoryImpl();
 	}
 	
 	private void fillProgram(UniversityProgram program) {

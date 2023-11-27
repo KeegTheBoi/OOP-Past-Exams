@@ -44,7 +44,7 @@ public class Test {
 	
 	@org.junit.Before
 	public void initFactory() {
-		//this.factory = new EitherFactoryImpl(); // TOGLIERE IL COMMENTO A INIZIO LINEA QUI!!!
+		this.factory = new EitherFactoryImpl(); // TOGLIERE IL COMMENTO A INIZIO LINEA QUI!!!
 	}
 	
 	@org.junit.Test

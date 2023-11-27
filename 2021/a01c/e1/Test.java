@@ -50,7 +50,7 @@ public class Test {
 	
 	@org.junit.Before
 	public void initFactory() {
-//		this.factory = new EventHistoryFactoryImpl();
+		this.factory = new EventHistoryFactoryImpl();
 	}
 	
 	@org.junit.Test
@@ -125,7 +125,7 @@ public class Test {
 	
 	@org.junit.Test
 	public void testFromFile() throws IOException {
-		var h = this.factory.fromFile("file.txt");
+		var h = this.factory.fromFile("C:\\Users\\keegancarlo.falcao\\oop2021-esami\\a01c\\sol1\\file.txt");
 		assertEquals(15.5, h.getTimeOfEvent(), TOLERANCE);
 		assertEquals("aaa", h.getEventContent());
 		assertTrue(h.moveToNextEvent());
