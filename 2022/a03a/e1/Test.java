@@ -35,7 +35,7 @@ public class Test {
 
 	@org.junit.Before
 	public void init() {
-		// this.factory = new ParserFactoryImpl();
+		this.factory = new ParserFactoryImpl();
 	}
 
 	@org.junit.Test
@@ -46,7 +46,7 @@ public class Test {
 			List.of(10,20,50),
 			List.of(50)
 		));
-		assertTrue(parser.accept(List.of(10,20,30,50).iterator()));
+			assertTrue(parser.accept(List.of(10,20,30,50).iterator()));
 		assertTrue(parser.accept(List.of(10,20,50).iterator()));
 		assertTrue(parser.accept(List.of(50).iterator()));
 		assertFalse(parser.accept(List.of(10,20).iterator()));
