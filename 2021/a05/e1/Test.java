@@ -44,7 +44,7 @@ public class Test {
 	
 	@org.junit.Before
 	public void initFactory() {
-		// this.factory = new StateFactoryImpl();
+		this.factory = new StateFactoryImpl();
 	}
 	
 	@org.junit.Test
