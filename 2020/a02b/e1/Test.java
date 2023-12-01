@@ -34,7 +34,7 @@ public class Test {
 
 	@org.junit.Before
 	public void init() {
-	//	this.factory = new PatternExtractorFactoryImpl();
+	  this.factory = new PatternExtractorFactoryImpl();
 	}
 
 	@org.junit.Test

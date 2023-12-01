@@ -33,7 +33,7 @@ public class Test {
 
 	@org.junit.Before
 	public void init() {
-		// this.factory = new ListSplitterFactoryImpl();
+		 this.factory = new ListSplitterFactoryImpl();
 	}
 
 	@org.junit.Test
