@@ -26,7 +26,7 @@ public class ScannerFactoryImpl implements ScannerFactory {
     }
 
     private <X> Stream<X> toStream(Iterator<X> input) {
-        return Stream.iterate(input.next(), c -> c != null, l -> input.hasNext() ? input.next() : null);
+        return input.hasNext() ? Stream.iterate(input.next(), c -> c != null, l -> input.hasNext() ? input.next() : null) : Stream.empty();
     }
 
     @Override
@@ -45,9 +45,12 @@ public class ScannerFactoryImpl implements ScannerFactory {
         return new Scanner<Integer,Optional<Integer>>() {
 
             @Override
-            public Optional<Integer> scan(Iterator<Integer> input) {
+            public Optional<Integer> scan(Iterator<Integer> input) {            
                 var prefixVals = toStream(input).collect(Collectors.toList());
-                Integer max = 0;
+                if(prefixVals.isEmpty()) {
+                    return Optional.empty();
+                }
+                Integer max = prefixVals.get(prefixVals.size()-1);
                 for (int i = 0; i < prefixVals.size() - 1; i++) {
                     if(prefixVals.get(i) > prefixVals.get(i + 1)) {
                         max = prefixVals.get(i);
@@ -55,9 +58,8 @@ public class ScannerFactoryImpl implements ScannerFactory {
                     }
                 }
                 final Integer maxFinal = max;
-                return toStream(input).filter(c -> c.equals(maxFinal)).findFirst();
-            }
-            
+                return prefixVals.stream().filter(c -> c == maxFinal).findFirst();
+            }            
         };
     }
 
@@ -67,19 +69,7 @@ public class ScannerFactoryImpl implements ScannerFactory {
 
             @Override
             public List<Integer> scan(Iterator<Integer> input) {
-                var t = toStream(input).reduce(new ArrayList<Integer>(), (c, n) -> {
-                    System.out.println(c + " " + n);
-                    ArrayList<Integer> list = new ArrayList<>(c);
-                    list.add(c.stream().mapToInt(Integer::intValue).sum() + n);
-                    return list;
-                }, 
-                (s, v) -> {
-                    System.out.println(s + " " + v);
-                    
-                    return s;
-                });
-                return null;
-                
+                return toStream(input).collect(ArrayList<Integer>::new, (m, l) -> m.add(m.isEmpty() ? l : m.get(m.size() - 1) + l), ArrayList::addAll);             
             }
             
         };
