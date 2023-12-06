@@ -1,5 +1,6 @@
 package a03a.e1;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
@@ -13,12 +14,15 @@ import java.util.stream.Stream;
 
 public class GroupingFactoryImpl implements GroupingFactory {
 
-    private class FromIteratorGrouping<G, V> implements Grouping<G, V> {
-        final Iterator<Pair<G, V>> iterator;
+    public abstract class AbstractGrouping<P, G, V> implements Grouping<G, V> {
+        private final Iterator<P> iterator;
+        protected final Map<G, Set<V>> map;
 
-        public FromIteratorGrouping(Iterator<Pair<G, V>> iterator){
+        public AbstractGrouping(Iterator<P> iterator){
             this.iterator = iterator;
+            map = new HashMap<>();
         }
+
         @Override
         public Set<V> getValuesOfGroup(G group) {
             // TODO Auto-generated method stub
@@ -33,20 +37,20 @@ public class GroupingFactoryImpl implements GroupingFactory {
 
         @Override
         public Optional<G> getGroupOf(V data) {
-            // TODO Auto-generated method stub
+            
             throw new UnsupportedOperationException("Unimplemented method 'getGroupOf'");
         }
 
-        private Stream<Pair<G, V>> asStream() {
-            return Stream.iterate(iterator.next(), v -> v != null, o -> this.iterator.hasNext() ? iterator.next() : null);
+        protected Stream<P> asStream() {
+            return iterator.hasNext() ? Stream.iterate
+                (iterator.next()
+                , v -> v != null, 
+                o -> this.iterator.hasNext() ? iterator.next() : null
+            ) : Stream.empty();
         }
 
         @Override
-        public Map<G, Set<V>> asMap() {
-            // TODO Auto-generated method stub
-           
-            return  null;
-        }
+        public abstract Map<G, Set<V>> asMap();
 
         @Override
         public Grouping<G, V> combineGroups(G initial1, G initial2, G result) {
@@ -58,7 +62,15 @@ public class GroupingFactoryImpl implements GroupingFactory {
 
     @Override
     public <G, V> Grouping<G, V> fromPairs(Iterable<Pair<G, V>> values) {
-        return null;
+        return new AbstractGrouping<Pair<G,V>,G,V>(values.iterator()) {
+
+            @Override
+            public Map<G, Set<V>> asMap() {
+                return this.asStream().collect(Collectors.groupingBy(Pair::get1), Collectors.mapping(Pair::get2, Collectors.toSet()));
+            }
+            
+        };
+        
     }
 
     @Override
