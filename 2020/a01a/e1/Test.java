@@ -2,11 +2,8 @@ package a01a.e1;
 
 import static org.junit.Assert.*;
 
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class Test {
 	
@@ -38,7 +35,7 @@ public class Test {
 	
 	@org.junit.Before
 	public void initFactory() {
-		// this.factory= new TreeFactoryImpl();
+		this.factory= new TreeFactoryImpl();
 	}
 	
 	/**
@@ -72,7 +69,7 @@ public class Test {
 		assertTrue(tree.getChildren().isEmpty());
 		assertEquals(Set.of("a"), tree.getLeafs());
 		assertEquals(Set.of("a"), tree.getAll());
-		//assertEquals("a[]", tree.toString()); // STESSO TEST IN optionalTestToString
+		assertEquals("a[]", tree.toString()); // STESSO TEST IN optionalTestToString
 	}
 	
 	@org.junit.Test
@@ -87,7 +84,7 @@ public class Test {
 		assertEquals(Integer.valueOf(13),tree.getChildren().get(2).getRoot()); // terzo figlio
 		assertEquals(Set.of(11,12,13), tree.getLeafs());
 		assertEquals(Set.of(10,11,12,13), tree.getAll());
-		//assertEquals("10[11[], 12[], 13[]]", tree.toString()); // STESSO TEST IN optionalTestToString
+		assertEquals("10[11[], 12[], 13[]]", tree.toString()); // STESSO TEST IN optionalTestToString
 	}
 	
 	@org.junit.Test
@@ -104,7 +101,7 @@ public class Test {
 		assertEquals(Integer.valueOf(20),tree.getChildren().get(1).getRoot()); // radice del secondo figlio
 		assertEquals(Set.of(11,12,20), tree.getLeafs());
 		assertEquals(Set.of(1,10,11,12,20), tree.getAll());
-		//assertEquals("1[10[11[], 12[]], 20[]]", tree.toString()); // STESSO TEST IN optionalTestToString
+		assertEquals("1[10[11[], 12[]], 20[]]", tree.toString()); // STESSO TEST IN optionalTestToString
 	}
 	
 	@org.junit.Test

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -21,7 +20,7 @@ public class PatternExtractorFactoryImpl implements PatternExtractorFactory {
                 for (int i = 0; i < input.size(); i+=delta) {
                     var stream = input.stream().skip(i).dropWhile(predicate.negate()).takeWhile(predicate);
                     var count = input.stream().skip(i+1).dropWhile(predicate.negate()).takeWhile(predicate).collect(Collectors.toList()).size();
-                    if(count > 0){
+                    if(count > 0) {
                         out.add(sup.apply(stream));
                     }                                  
                     delta = count + 1;
