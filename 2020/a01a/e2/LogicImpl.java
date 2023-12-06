@@ -51,7 +51,7 @@ public class LogicImpl implements Logic{
     @Override
     public boolean isOver() {
         var orizzonal = getListByOrient(false);
-
+        
         var vertical = getListByOrient(true);
 
         for (int i = 0; i < this.size; i++) {
