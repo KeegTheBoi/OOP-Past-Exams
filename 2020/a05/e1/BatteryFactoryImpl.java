@@ -3,7 +3,7 @@ package a05.e1;
 public class BatteryFactoryImpl implements BatteryFactory {
 
 
-    public abstract class SimpleBattery implements Battery{
+    public  class SimpleBattery implements Battery{
         protected double energy;
 
         public SimpleBattery(){
@@ -14,7 +14,12 @@ public class BatteryFactoryImpl implements BatteryFactory {
         public void startUse() {}
         
         @Override
-        public abstract void stopUse(double duration);
+        public void stopUse(double duration) {
+            this.energy -= duration;
+                if (this.energy < 0.0) {
+                    this.energy = 0.0;
+                }
+        }
 
         @Override
         public double getEnergy() {
@@ -36,7 +41,7 @@ public class BatteryFactoryImpl implements BatteryFactory {
         }
         @Override
         public void startUse() {
-            if(inUse) {
+            if(inUse || this.getEnergy() == 0.0) {
                 throw new IllegalStateException();
             }
             this.inUse = true;
@@ -47,15 +52,13 @@ public class BatteryFactoryImpl implements BatteryFactory {
             if(!inUse) {
                 throw new IllegalStateException();
             }
-            this.decorated.stopUse(duration); 
-            this.inUse = false;          
+            this.decorated.stopUse(duration);
+            this.inUse = false;    
+                   
         }
 
         @Override
         public double getEnergy() {
-            if(this.decorated.getEnergy() < 0.0) {
-                throw new IllegalStateException();
-            }
             return this.decorated.getEnergy();
         }
 
@@ -117,18 +120,18 @@ public class BatteryFactoryImpl implements BatteryFactory {
 
         };
     }
- 
+    
+
 
     @Override
     public Battery createSimpleBatteryByDrop(double energyPerDurationDrop) {
-        return new SimpleBattery() {
-
+       return new SimpleBattery() {
             @Override
             public void stopUse(double duration) {
-                this.energy -= duration;
+                super.stopUse(duration * energyPerDurationDrop);
             }
-            
         };
+   
     }
 
     @Override
@@ -145,7 +148,7 @@ public class BatteryFactoryImpl implements BatteryFactory {
 
     @Override
     public Battery createSecureBattery() {
-        return new SecureBattery(this.createSecureBattery());
+        return new SecureBattery(this.createSimpleBattery());
     }
 
     @Override
