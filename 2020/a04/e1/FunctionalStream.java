@@ -2,7 +2,6 @@ package a04.e1;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 
 /*
  * This interface models an immutable (and purely functional) infinite stream of values of type E

@@ -1,7 +1,6 @@
 package a04.sol1;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import static a04.sol1.FunctionalStreamTemplate.NextResultImpl;

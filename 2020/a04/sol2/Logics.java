@@ -1,7 +1,6 @@
 package a04.sol2;
 
 import java.util.Set;
-import java.util.function.Predicate;
 
 public interface Logics{
 	

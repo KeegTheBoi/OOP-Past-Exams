@@ -1,7 +1,6 @@
 package a03a.sol2;
 
 import java.util.*;
-import java.util.function.*;
 
 public class LogicsImpl implements Logics {
 
