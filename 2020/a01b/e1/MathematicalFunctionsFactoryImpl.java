@@ -50,8 +50,20 @@ public class MathematicalFunctionsFactoryImpl implements MathematicalFunctionsFa
 
             @Override
             public MathematicalFunction<A, B> restrict(Set<A> subDomain) {
-                // TODO Auto-generated method stub
-                throw new UnsupportedOperationException("Unimplemented method 'restrict'");
+                 return fromMap(
+                    subDomain.stream()
+                    .filter(this::inDomain)
+                    .map(
+                            l -> new Pair<A, B>(
+                            l,
+                            this.apply(l).get()
+                        )
+                    )
+                    .collect(Collectors.toMap(
+                        Pair::x, 
+                        Pair::y)
+                    )
+                );
             }
             
         };

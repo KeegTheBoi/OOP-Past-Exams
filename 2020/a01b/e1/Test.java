@@ -34,7 +34,7 @@ public class Test {
 
 	@org.junit.Before
 	public void init() {
-		//this.factory = new MathematicalFunctionsFactoryImpl();
+		this.factory = new MathematicalFunctionsFactoryImpl();
 	}
 
 	@org.junit.Test
