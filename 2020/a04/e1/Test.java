@@ -40,7 +40,7 @@ public class Test {
 
 	@org.junit.Before
 	public void initFactory() {
-		//this.factory = new FunctionalStreamFactoryImpl();
+		this.factory = new FunctionalStreamFactoryImpl();
 	}
 
 
