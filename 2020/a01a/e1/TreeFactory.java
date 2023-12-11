@@ -1,7 +1,6 @@
 package a01a.e1;
 
 import java.util.List;
-import java.util.Set;
 
 public interface TreeFactory {
 
