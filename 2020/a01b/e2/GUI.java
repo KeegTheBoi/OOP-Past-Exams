@@ -2,7 +2,6 @@ package a01b.e2;
 
 import javax.swing.*;
 import java.util.*;
-import java.util.List;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
@@ -23,7 +22,12 @@ public class GUI extends JFrame {
         ActionListener al = e -> {
         	var button = (JButton)e.getSource();
         	var position = cells.get(button);
-        	button.setText(""+position);
+        	logic.hit(position);
+            draw();
+            if(logic.isOver()) {
+                System.out.println("finito");
+                System.exit(0);
+            }
         };
                 
         for (int i=0; i<size; i++){
@@ -34,8 +38,9 @@ public class GUI extends JFrame {
                 panel.add(jb);
             }
         }
-        draw();
+        
         this.setVisible(true);
+        draw();
     }
 
 
@@ -49,5 +54,6 @@ public class GUI extends JFrame {
             }
         });
     }
+    
     
 }
