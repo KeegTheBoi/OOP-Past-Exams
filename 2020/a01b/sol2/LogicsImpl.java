@@ -1,10 +1,6 @@
 package a01b.sol2;
 
 import java.util.*;
-import java.util.function.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class LogicsImpl implements Logics {
 

@@ -1,7 +1,6 @@
 package a01b.e2;
 
 import java.util.Map;
-import java.util.Optional;
 
 public interface Logic {
     enum Player {

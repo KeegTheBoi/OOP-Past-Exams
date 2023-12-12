@@ -3,10 +3,8 @@ package a01b.e2;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
-import java.util.stream.IntStream;
 
 public class LogicImpl implements Logic {
 
@@ -42,7 +40,6 @@ public class LogicImpl implements Logic {
                 moveKing(c);
                 return true;
             }
-
         }
         return false;
     }
@@ -53,9 +50,7 @@ public class LogicImpl implements Logic {
             enemies.remove(c);
         }
         mapPlayer.put(c, Player.KING);
-        kingPos = c;
-       
-        
+        kingPos = c;        
     }
 
     private boolean isCorrect(Coord c) {
