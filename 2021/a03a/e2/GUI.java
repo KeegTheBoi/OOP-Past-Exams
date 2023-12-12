@@ -2,17 +2,17 @@ package a03a.e2;
 
 import javax.swing.*;
 import java.util.*;
-import java.util.List;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
 public class GUI extends JFrame {
     
     private static final long serialVersionUID = -6218820567019985015L;
-    private final List<JButton> cells = new ArrayList<>();
-    private int counter = 0;
+    private final Map<JButton, Coord> cells = new HashMap<>();
+    private final Logic log;
     
     public GUI(int size) {
+        log = new LogicImpl(size);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setSize(50*size, 50*size);
         
@@ -20,19 +20,40 @@ public class GUI extends JFrame {
         this.getContentPane().add(panel);
         
         ActionListener al = e -> {
-        	this.cells.get(counter).setText(String.valueOf(counter++));
+
+            if(log.hit(cells.get((JButton)e.getSource()))) {
+                draw();
+                if(log.isOver()) {
+                    disableAll();
+                }              
+            }          
         };
                 
         for (int i=0; i<size; i++){
             for (int j=0; j<size; j++){
-            	var pos = new Pair<>(j,i);
                 final JButton jb = new JButton(" ");
-                this.cells.add(jb);
+                this.cells.put(jb, new Coord(j, i));
                 jb.addActionListener(al);
                 panel.add(jb);
             }
         }
         this.setVisible(true);
+        draw();
+    }
+
+    private void disableAll() {
+        cells.forEach((k, v) -> k.setEnabled(false));
+    }
+
+    private void draw() {
+        this.cells.forEach((k, v) -> {
+            if(log.getMap().keySet().contains(v)) {
+                k.setText(log.getMap().get(v));
+            }
+            else {
+                 k.setText("");
+            }
+        });
     }
     
 }

@@ -27,6 +27,6 @@ public class Test {
      */
 
     public static void main(String[] args) throws java.io.IOException {
-        new GUI(20); 
+        new GUI(19); 
     }
 }
