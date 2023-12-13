@@ -41,8 +41,7 @@ public class DecisionChainFactoryImpl implements DecisionChainFactory {
                 else if(result(a).isEmpty()) {
                     decide = false;
                     return oneResult(negative);
-                }
-                
+                }             
                 return oneResult(positive);
             }
             
