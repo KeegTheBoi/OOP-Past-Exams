@@ -17,10 +17,7 @@ public class DecisionChainFactoryImpl implements DecisionChainFactory {
 
             @Override
             public DecisionChain<A, B> next(A a) {
-                if(this.result(a).isEmpty()){
-                    return oneResult(b);
-                }
-                return null;
+                return next(a);
             }
             
         };
@@ -30,18 +27,23 @@ public class DecisionChainFactoryImpl implements DecisionChainFactory {
     @Override
     public <A, B> DecisionChain<A, B> simpleTwoWay(Predicate<A> predicate, B positive, B negative) {
         return new DecisionChain<A,B>() {
-
+            private boolean decide = true;
             @Override
             public Optional<B> result(A a) {
-                return Optional.of(a).filter(predicate).map(i -> positive);
+                return Optional.of(a).filter(predicate.and(l -> decide)).map(c -> positive);
             }
 
             @Override
             public DecisionChain<A, B> next(A a) {
-                if(this.result(a).isEmpty()){
-                    return simpleTwoWay(predicate.negate(), positive, negative);
+                if(Optional.of(a).filter(predicate).isPresent()) {
+                    decide = true;
                 }
-                return null;
+                else if(result(a).isEmpty()) {
+                    decide = false;
+                    return oneResult(negative);
+                }
+                
+                return oneResult(positive);
             }
             
         };
@@ -56,8 +58,22 @@ public class DecisionChainFactoryImpl implements DecisionChainFactory {
     @Override
     public <A, B> DecisionChain<A, B> twoWay(Predicate<A> predicate, DecisionChain<A, B> positive,
             DecisionChain<A, B> negative) {
-        // TODO Auto-generated method stub
-        return null;
+        return new DecisionChain<A,B>() {
+
+            @Override
+            public Optional<B> result(A a) {
+                if(!Optional.of(a).filter(predicate).isEmpty()) {
+                    return positive.result(a);
+                }
+               return this.next(a).result(a);
+            }
+
+            @Override
+            public DecisionChain<A, B> next(A a) {
+                return negative;
+            }
+            
+        };
     }
 
     @Override
