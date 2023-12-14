@@ -42,7 +42,7 @@ public class Test {
 	
 	@org.junit.Before
 	public void initFactory() {
-		//this.factory = new DeterministicParserFactoryImpl();
+		this.factory = new DeterministicParserFactoryImpl();
 	}
 	
 	@org.junit.Test
