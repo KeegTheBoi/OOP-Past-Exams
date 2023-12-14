@@ -3,7 +3,6 @@ package a03b.e2;
 import javax.swing.*;
 
 import java.util.*;
-import java.util.List;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
@@ -23,7 +22,12 @@ public class GUI extends JFrame {
         this.getContentPane().add(panel);
         
         ActionListener al = e -> {
-        	cells.get(log.hit()).setText(String.valueOf(counter++));
+            log.hit().ifPresent(coord -> cells.get(coord).setText(String.valueOf(counter++)));
+            if(log.isOver()) {
+                System.out.println("finished");
+                System.exit(99);
+            }
+        	
         };
                 
         for (int i=0; i<size; i++){
