@@ -66,7 +66,7 @@ public class AcceptorFactoryAdvancedImpl implements AcceptorFactory {
                 
                 Optional<S> res = stateFun.apply(e, state);   
                 res.ifPresent(c -> state = c);
-                return res.isPresent() ? true : false;
+                return res.isPresent();
             }
 
             @Override
