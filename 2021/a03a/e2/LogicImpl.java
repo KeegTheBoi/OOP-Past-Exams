@@ -33,9 +33,7 @@ public class LogicImpl implements Logic{
     }
 
     private void drawRectangle(Coord vertix) {
-        Coord oppositeVertix = new Coord(size - vertix.x() - 1, size - vertix.y() - 1);
-        System.out.println(vertix);
-        System.out.println(oppositeVertix);       
+        Coord oppositeVertix = new Coord(size - vertix.x() - 1, size - vertix.y() - 1);       
         updateMap(vertix.x(), oppositeVertix.x() + 1, x -> new Pair<>(new Coord(x, oppositeVertix.y()), new Coord(x, vertix.y())));
         updateMap(vertix.y() + 1, oppositeVertix.y(), y -> new Pair<>(new Coord(vertix.x(), y), new Coord(oppositeVertix.x(), y)));
         if(Math.abs(oppositeVertix.x() - vertix.x()) <= 2 || Math.abs(oppositeVertix.y() - vertix.y()) <= 2) {

@@ -24,12 +24,13 @@ public class GUI extends JFrame {
         this.getContentPane().add(BorderLayout.SOUTH,quit);
         
         quit.addActionListener(e -> {
+            System.out.println(log.getResult());
         	System.exit(0);
        	});
         
         ActionListener al = e -> {
         	var jb = (JButton)e.getSource();
-        	
+            log.hit(cells.get(jb));
         };
                 
         for (int i=0; i<size; i++){
@@ -41,5 +42,27 @@ public class GUI extends JFrame {
             }
         }
         this.setVisible(true);
+        draw();
+    }
+
+    public void draw() {
+        cells.forEach((k, v) -> {
+            if(log.getMap().get(v).isValue()) {
+                k.setText(String.valueOf(log.getMap().get(v).getVal()));
+            }
+            else {         
+                switch (log.getMap().get(v).getOperand()){
+                    case ADD:
+                        k.setText("+");
+                        return;
+                    case MINUS:
+                        k.setText("-");
+                        return;
+                    case MULTIPLY:
+                        k.setText("*");
+                        return;
+                }               
+            }
+        });
     }
 }

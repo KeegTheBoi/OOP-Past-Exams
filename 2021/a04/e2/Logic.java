@@ -1,10 +1,13 @@
 package a04.e2;
 
-import java.util.Optional;
+import java.util.Map;
+
 
 public interface Logic {
     
-    Optional<Integer> hit(Coord c);
+    void hit(Coord c);
 
-    
+    int getResult();
+
+    Map<Coord, Operator> getMap();
 }
