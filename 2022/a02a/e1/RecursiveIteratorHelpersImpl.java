@@ -1,99 +1,71 @@
 package a02a.e1;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
-public class RecursiveIteratorHelpersImpl implements RecursiveIteratorHelpers{
 
-    public class RecursiveIteratorImpl<X> implements RecursiveIterator<X>{
+public class RecursiveIteratorHelpersImpl implements RecursiveIteratorHelpers {
 
-        private final Iterator<X> lista;
-        private final X newVal;
-        public RecursiveIteratorImpl(X newValue, Iterator<X> iteratore){
-            this.lista = iteratore;
-            this.newVal = newValue;
-        }
+    public <X> RecursiveIterator<X> fromIterator(Iterator<X> iter) {
 
-        @Override
-        public X getElement() {
-            return this.newVal;            
-        }
+        return iter.hasNext() ? 
+            new RecursiveIterator<X>() {
+            private X value = iter.next();
 
-        @Override
-        public RecursiveIterator<X> next() {
-            return this.lista.hasNext() ? new RecursiveIteratorImpl<>(this.lista.next(), this.lista) : null;
-        }
+                @Override
+                public X getElement() {
+                    return value;
+                }
 
+                @Override
+                public RecursiveIterator<X> next() {
+                    return iter.hasNext() ? fromIterator(iter) : null;
+                }
+                
+            } 
+        : null;
     }
 
     @Override
     public <X> RecursiveIterator<X> fromList(List<X> list) {
-        return list.iterator().hasNext() ? new RecursiveIteratorImpl<>( list.iterator().next(),  list.listIterator(1)) : null;
-        
+        return fromIterator(list.iterator());
     }
 
     @Override
     public <X> List<X> toList(RecursiveIterator<X> input, int max) {
-        List<X> out = new ArrayList<>();
-        RecursiveIterator<X> next = input;
-        while(out.size() < max && next != null){
-            out.add(next.getElement());  
-            next = input.next();                
-        }
-        return List.copyOf(out);
+        return Stream.iterate(input, i -> i != null, r -> r.next()).map(RecursiveIterator::getElement).limit(max).collect(Collectors.toList());
     }
 
     @Override
-    public <X, Y> RecursiveIterator<Pair<X, Y>> zip(final RecursiveIterator<X> first, final RecursiveIterator<Y> second) {
-        final List<X> firstRec = this.toList(first, Integer.MAX_VALUE);
-        final List<Y> secondRec = this.toList(second, Integer.MAX_VALUE);
-        List<Pair<X, Y>> outer = new ArrayList<>();
-        final var iterF = firstRec.iterator();
-        final var iterS = secondRec.iterator();
-        while(iterF.hasNext() && iterS.hasNext()){
-            outer.add(new Pair<X,Y>(iterF.next(), iterS.next()));
-        }
-        return this.fromList(List.copyOf(outer));
+    public <X, Y> RecursiveIterator<Pair<X, Y>> zip(RecursiveIterator<X> first, RecursiveIterator<Y> second) {
+        return fromIterator(
+            Stream.iterate(
+                new Pair<>(first, second),
+                i -> i.getX() != null && i.getY() != null,
+                c -> new Pair<>(c.getX().next(), c.getY().next())
+            ).map(n -> new Pair<>(n.getX().getElement(), n.getY().getElement()))
+            .iterator()
+        );
     }
 
     @Override
     public <X> RecursiveIterator<Pair<X, Integer>> zipWithIndex(RecursiveIterator<X> iterator) {
-        List<Integer> listIndexs = new ArrayList<>();
-        List<X> inpRecurs = this.toList(iterator, Integer.MAX_VALUE);
-        for (int i = 0; i < inpRecurs.size(); i++) {
-            listIndexs.add(i);
-        }
-        return this.zip(this.fromList(List.copyOf(inpRecurs)), this.fromList(List.copyOf(listIndexs)));
+        return zip(iterator, fromIterator(Stream.iterate(0, i -> i + 1).iterator()));
     }
 
+    private int count = 0;
     @Override
     public <X> RecursiveIterator<X> alternate(RecursiveIterator<X> first, RecursiveIterator<X> second) {
-        final List<X> firstRec = this.toList(first, Integer.MAX_VALUE);
-        final List<X> secondRec = this.toList(second, Integer.MAX_VALUE);
-        List<X> outer = new ArrayList<>();
-        final var iterF = firstRec.iterator();
-        final var iterS = secondRec.iterator();
-        while(iterF.hasNext() || iterS.hasNext()){
-            if(outer.size() % 2 == 0){
-                if(iterF.hasNext()){
-                    outer.add(iterF.next());
-                }
-                else if (iterS.hasNext()){
-                    outer.add(iterS.next());
-                }
-            }
-            else{
-                if(iterS.hasNext()){
-                    outer.add(iterS.next());
-                }
-                else if (iterF.hasNext()){
-                    outer.add(iterF.next());
-                }
-            }
-            
-        }
-        return this.fromList(outer);
+        List<X> firstList = toList(first, 200);
+        List<X> secondList = toList(second, 200);
+        Iterator<X> firstIterator = firstList.iterator();
+        Iterator<X> secondIterator = secondList.iterator();
+        return fromIterator(IntStream.range(0, firstList.size() + secondList.size())
+        .mapToObj(l -> count++ % 2 == 0 ?
+             firstIterator.hasNext() ? firstIterator.next() : secondIterator.next() :
+             secondIterator.hasNext() ? secondIterator.next() : firstIterator.next()).iterator());
     }
-    
+
 }

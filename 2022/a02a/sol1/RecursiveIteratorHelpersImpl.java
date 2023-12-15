@@ -7,7 +7,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class RecursiveIteratorHelpersImpl implements RecursiveIteratorHelpers {
+public class RecursiveIteratorHelpersImpl implements RecursiveIteratorHelpers{
 
     private <X> RecursiveIterator<X> cons(X element, Supplier<RecursiveIterator<X>> next){
         return new RecursiveIterator<X>() {
