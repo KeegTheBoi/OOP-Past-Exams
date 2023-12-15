@@ -44,7 +44,7 @@ public class Test {
 
 	@org.junit.Before
 	public void initFactory() {
-		//this.factory = new BTreeFactoryImpl();
+		this.factory = new BTreeFactoryImpl();
 	}
 	
 	@org.junit.Test
