@@ -7,8 +7,6 @@ import java.util.stream.IntStream;
 
 public class FlattenerFactoryImpl implements FlattenerFactory {
 
-
-
     @Override
     public Flattener<Integer, Integer> sumEach() {
        return l -> l.stream().map(s -> s.stream().mapToInt(Integer::intValue).sum()).collect(Collectors.toList());
@@ -23,7 +21,7 @@ public class FlattenerFactoryImpl implements FlattenerFactory {
     public Flattener<String, String> concatPairs() {
         return li -> IntStream.range(
             0, 
-            (li.size() + li.size() % 2) / 2
+            Double.valueOf(Math.ceil(li.size() / 2)).intValue()
         )
         .mapToObj(
             i -> li.stream()
