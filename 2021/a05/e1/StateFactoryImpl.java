@@ -2,13 +2,15 @@ package a05.e1;
 
 import java.util.Iterator;
 import java.util.function.Function;
+import java.util.stream.Stream;
+
 
 public class StateFactoryImpl implements StateFactory {
 
     @Override
     public <S, A> State<S, A> fromFunction(Function<S, Pair<S, A>> fun) {
         return new State<S,A>() {
-            A current;
+
             @Override
             public S nextState(S s) {
                 return fun.apply(s).get1();
@@ -16,19 +18,17 @@ public class StateFactoryImpl implements StateFactory {
 
             @Override
             public A value(S s) {
-                current = fun.apply(s).get2();
-                return current;
+                return fun.apply(s).get2();
             }
 
             @Override
             public <B> State<S, B> map(Function<A, B> func) {
-                return fromFunction(s -> new Pair<>(fun.apply(s).get1(), func.apply(fun.apply(s).get2())));
+                return fromFunction(s -> new Pair<>(fun.apply(s).get1(), func.apply(value(s))));
             }
 
             @Override
             public Iterator<A> iterator(S s0) {
-                // TODO Auto-generated method stub
-                return null;
+                return Stream.iterate(s0, s -> nextState(s)).map(this::value).iterator();
             }
             
         };
@@ -49,15 +49,14 @@ public class StateFactoryImpl implements StateFactory {
             }
 
             @Override
-            public <L> State<S, L> map(Function<B, L> fun) {
+            public <K> State<S, K> map(Function<B, K> fun) {
                 
-                return fromFunction(s -> new Pair<S, L>(nextState(s) , fun.apply(value(s))));
+                return fromFunction(s -> new Pair<>(state2.nextState(state1.nextState(s)), fun.apply(value(s))));
             }
 
             @Override
             public Iterator<B> iterator(S s0) {
-                // TODO Auto-generated method stub
-                return null;
+                return Stream.iterate(s0, s -> nextState(s)).map(this::value).iterator();
             }
             
         };
@@ -65,8 +64,13 @@ public class StateFactoryImpl implements StateFactory {
 
     @Override
     public State<Integer, String> incSquareHalve() {
-        // TODO Auto-generated method stub
-        return null;
+        return compose(
+                compose(
+                    fromFunction(s -> new Pair<Integer, String>(s + 1, String.valueOf(s + 1))),
+                    fromFunction(s -> new Pair<Integer, String>((int)Math.pow(s, 2), String.valueOf(Math.pow(s, 2))))
+                ),
+                fromFunction(s -> new Pair<Integer, String>(s / 2, String.valueOf(s / 2)))
+            );
     }
 
     @Override
