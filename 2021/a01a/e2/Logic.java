@@ -4,7 +4,7 @@ import java.util.Map;
 
 public interface Logic {
     enum Component {
-        FISRT, SECOND, ANY
+        FIRST, ANY
     }
 
     void hit(Coord c);

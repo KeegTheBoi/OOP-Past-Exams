@@ -5,7 +5,6 @@ import javax.swing.*;
 import a01a.e2.Logic.Component;
 
 import java.util.*;
-import java.util.List;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
@@ -25,8 +24,12 @@ public class GUI extends JFrame {
         
         ActionListener al = e -> {
         	var button = (JButton)e.getSource();
-        	button.setText(""+cells.get(button));
-        	button.setEnabled(false); 
+        	var pos = cells.get(button);
+        	log.hit(pos); 
+            if(log.isOver()){
+                disableButtons();  
+            }
+            draw();
         };
                 
         for (int i=0; i<size; i++){
@@ -40,16 +43,17 @@ public class GUI extends JFrame {
         this.setVisible(true);
     }
 
+    private void disableButtons() {
+        cells.keySet().forEach(k -> k.setEnabled(false));
+    }
+
     void draw() {
         cells.forEach((k, v) -> {
             if(log.getMap().containsKey(v)) {
-                if(log.getMap().get(v).equals(Component.FISRT)) {
+                if(log.getMap().get(v).equals(Component.FIRST)) {
                     k.setText("1");
                 }
-                else if (log.getMap().get(v).equals(Component.FISRT)){
-                    k.setText("2");
-                }
-                else {
+                if(log.getMap().get(v).equals(Component.ANY)) {
                     k.setText("*");
                 }
             }

@@ -8,7 +8,7 @@ public class LogicImpl implements Logic {
     private final Map<Coord, Component> map;
     private final int size;
     private boolean isOv;
-    private int counter;
+    private int counter = -1;
     private Coord first;
 
     public LogicImpl(int size) {
@@ -17,25 +17,31 @@ public class LogicImpl implements Logic {
     }
 
     @Override
-    public void hit(Coord c) {
-        if(counter++ == 0) {
-            map.put(c, Component.FISRT);
+    public void hit(Coord c) {  
+        ++counter;
+        if(counter == 0) {
+            map.put(c, Component.FIRST);
             first = c;
         }
         else if (counter == 1){
-            map.put(c, Component.SECOND);
+            map.put(c, Component.ANY);
             drawRectangle(first, c);
-            counter = 0;
+            if(map.size() == size * size) {
+                isOv = true;
+            }
+            counter = -1;
         }
     }
 
     private void drawRectangle(Coord vertix, Coord antiVetrix) {
-        IntStream.range(
-            vertix.x() > antiVetrix.x() ? antiVetrix.x() : vertix.x(),
-            Math.abs(vertix.x() - antiVetrix.x())
-        ).boxed().flatMap(x -> IntStream.range(
+        int startX = vertix.x() > antiVetrix.x() ? antiVetrix.x() : vertix.x();
+        int startY = vertix.y() > antiVetrix.y() ? antiVetrix.y() : vertix.y();
+        IntStream.rangeClosed(
+            startX,
+            startX + Math.abs(vertix.x() - antiVetrix.x())
+        ).boxed().flatMap(x -> IntStream.rangeClosed(
             vertix.y() > antiVetrix.y() ? antiVetrix.y() : vertix.y(),
-            Math.abs(vertix.x() - antiVetrix.x())).
+            startY +Math.abs(vertix.y() - antiVetrix.y())).
             mapToObj(y -> new Coord(x, y))
         ).forEach(h -> map.put(h, Component.ANY));
     }
