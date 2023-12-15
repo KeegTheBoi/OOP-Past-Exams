@@ -1,8 +1,6 @@
 package a01a.e1;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -39,29 +37,22 @@ public class SubsequenceCombinerFactoryImpl implements SubsequenceCombinerFactor
     
     private int nextInd;
     public SubsequenceCombiner<Integer,Integer> countUntilZero() {
-        return countWithPredicate(l -> l == 0);
+        return l -> countWithPredicate(v -> v == 0, l);
     }
 
-    public SubsequenceCombiner<Integer,Integer> countWithPredicate(Predicate<Integer> p) {
-        
-        return new SubsequenceCombiner<Integer,Integer>() {
-            @Override
-            public List<Integer> combine(List<Integer> list) {
-                nextInd = 0;
-                return IntStream.range(0, (int)list.stream().filter(p).count() + 1)
-                .mapToObj(
-                    i -> { 
-                        var count = (int)list.stream().
-                            skip(nextInd)
-                            .takeWhile(p.negate())
-                            .count();
-                        nextInd+=count + 1;
-                        return count;
-                    }
-                ).filter(p.negate()).collect(Collectors.toList());
+    public List<Integer> countWithPredicate(Predicate<Integer> p, List<Integer> list) {
+        nextInd = 0;
+        return IntStream.range(0, (int)list.stream().filter(p).count() + 1)
+        .mapToObj(
+            i -> { 
+                var count = (int)list.stream().
+                    skip(nextInd)
+                    .takeWhile(p.negate())
+                    .count();
+                nextInd+=count + 1;
+                return count;
             }
-            
-        }; 
+        ).filter(p.negate()).collect(Collectors.toList());
     }
 
     public <X,Y> SubsequenceCombiner<X,Y> singleReplacer(Function<X,Y>
