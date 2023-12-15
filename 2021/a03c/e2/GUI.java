@@ -5,7 +5,6 @@ import javax.swing.*;
 import a03c.e2.Logic.Player;
 
 import java.util.*;
-import java.util.List;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
@@ -14,7 +13,6 @@ public class GUI extends JFrame {
     private static final long serialVersionUID = -6218820567019985015L;
     private final Map<JButton, Coord> cells = new HashMap<>();
     private Logic log;
-    private int counter = 0;
     
     public GUI(int size) {
         log = new LogicImpl(size);
@@ -50,7 +48,7 @@ public class GUI extends JFrame {
                 if(log.getMap().get(v).getX().equals(Player.BOUNCER)) {
                     k.setText(log.getMap().get(v).getX().getSymbol());
                 }
-                else if(log.getMap().get(v).getX().equals(Player.PEDINA)) {
+                else if(log.getMap().get(v).getX().equals(Player.PEDINA)) {           
                     k.setText(log.getMap().get(v).getX().getSymbol());
                 }
             }

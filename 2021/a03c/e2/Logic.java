@@ -2,11 +2,8 @@ package a03c.e2;
 
 import java.util.Map;
 
-import javax.swing.JButton;
-
 public interface Logic {
-        
-        
+            
     enum Direction {
         NO(0), UP(-1), DOWN(1);
 
@@ -27,7 +24,7 @@ public interface Logic {
     }
 
     enum Player{
-        BOUNCER("O"), PEDINA("*");
+        BOUNCER("O"), PEDINA("*"), EMPTY("");
 
         private String symbol;
 

@@ -2,14 +2,12 @@ package a03c.e2;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class LogicImpl implements Logic {
-
-
-
-   
 
     private final Map<Coord, Pair<Player, Direction>> map;
     private final int size;
@@ -31,26 +29,32 @@ public class LogicImpl implements Logic {
         return this.map;
     }
 
+    Coord pos;
     @Override
     public boolean hit() {
-        IntStream.range(0, size).forEach(i -> IntStream.range(0, size).forEach(j -> {
-            Coord pos = new Coord(i, j);    
+        IntStream.range(0, size).forEach(i -> map.keySet().stream().filter(c -> c.x() == i).collect(Collectors.toList()).forEach(j -> {
+            pos = new Coord(i, j.y());    
             if(map.containsKey(pos) && map.get(pos).getX().equals(Player.PEDINA)) {
-                if(pos.y() == size - 1) {
-                    map.put(pos, new Pair<>(Player.PEDINA, Direction.UP));
+                Coord tryPos = new Coord(pos.x(), pos.y() + map.get(pos).getY().getDeltaY());
+                Optional<Coord> bounceCoord = Optional.empty();
+                if(map.containsKey(tryPos) && map.get(tryPos).getX().equals(Player.BOUNCER)) {
+                    bounceCoord = Optional.of(tryPos);
+                    tryPos = new Coord(pos.x(), pos.y() + map.get(tryPos).getY().getDeltaY());
+                } 
+                if(tryPos.y() == size - 1) {
+                    map.put(pos, new Pair<>(Player.EMPTY, Direction.UP));
                 }
-                if(pos.y() == 0) {
+                bounceCoord.ifPresent(f -> {map.remove(pos); pos = f;});
+                map.put(tryPos, new Pair<>(Player.PEDINA, map.get(pos).getY()));
+                map.remove(pos);
+                if(tryPos.y() == 0) {
                     success = false;
                 }
-                if(map.containsKey(pos) && map.get(new Coord(pos.x(), pos.y() + map.get(pos).getY().getDeltaY())).getX().equals(Player.BOUNCER)) {
-                    map.put(pos, new Pair<>(Player.PEDINA, Direction.DOWN));
-                } 
-                map.put(new Coord(pos.x(), pos.y() + map.get(pos).getY().getDeltaY()), new Pair<>(Player.PEDINA, map.get(pos).getY()));
-                map.remove(pos);
                 
             }
                       
         }));
+        
         return success;
     }
 
