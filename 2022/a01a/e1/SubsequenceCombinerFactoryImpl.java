@@ -66,12 +66,15 @@ public class SubsequenceCombinerFactoryImpl implements SubsequenceCombinerFactor
      * for an example, look at its testcase in class Test
      */
     public SubsequenceCombiner<Integer,List<Integer>> cumulateToList(int threshold) {
+        var outerList = new ArrayList<Integer>();
         return re-> re.stream().collect(
             ArrayList::new, 
             (o, n)-> {
                 if(o.stream().flatMapToInt(k -> k.stream().mapToInt(Integer::intValue)).sum() < threshold) {
-                    o.add(List.of(n));
+                    o.add(outerList);
+                    outerList.clear();
                 }
+                outerList.add(n);
             }, List::addAll);
     }
     
