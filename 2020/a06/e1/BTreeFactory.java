@@ -1,7 +1,6 @@
 package a06.e1;
 
 import java.util.List;
-import java.util.function.BiFunction;
 
 public interface BTreeFactory {
 	
