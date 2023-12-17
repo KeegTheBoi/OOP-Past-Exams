@@ -1,6 +1,7 @@
 package a01a.e1;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -66,16 +67,20 @@ public class SubsequenceCombinerFactoryImpl implements SubsequenceCombinerFactor
      * for an example, look at its testcase in class Test
      */
     public SubsequenceCombiner<Integer,List<Integer>> cumulateToList(int threshold) {
+       return re -> cumulate(re, threshold);
+    }
+
+    private List<List<Integer>> cumulate(List<Integer> re , int threshold) {
         var outerList = new ArrayList<Integer>();
-        return re-> re.stream().collect(
-            ArrayList::new, 
+        return Stream.concat(re.stream().collect(
+            ArrayList<List<Integer>>::new, 
             (o, n)-> {
-                if(o.stream().flatMapToInt(k -> k.stream().mapToInt(Integer::intValue)).sum() < threshold) {
-                    o.add(outerList);
-                    outerList.clear();
-                }
                 outerList.add(n);
-            }, List::addAll);
+                if(outerList.stream().mapToInt(Integer::intValue).sum() >= threshold) {
+                    o.add(List.copyOf(outerList));
+                    outerList.clear();
+                }                      
+            }, List::addAll).stream(), Stream.of(outerList)).toList();
     }
     
    

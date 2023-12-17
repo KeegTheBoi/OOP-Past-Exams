@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class CursorHelpersImpl implements CursorHelpers {
 
@@ -24,8 +26,7 @@ public class CursorHelpersImpl implements CursorHelpers {
                     return true;
                 }
                 return false;
-            }
-            
+            }         
         };
     }
     
@@ -40,44 +41,23 @@ public class CursorHelpersImpl implements CursorHelpers {
         return this.fromIterator(IntStream.iterate(0, i -> i + 1).iterator());
     }
 
+    private <X> Stream<X> toStream(Cursor<X> input) {
+        return Stream.concat(Stream.of(input), Stream.iterate(input, k -> k.advance(), UnaryOperator.identity())).map(Cursor::getElement);
+    }
+
     @Override
     public <X> Cursor<X> take(Cursor<X> input, int max) {
-        return new Cursor<X>() {
-            private int cursor = 1;
-            @Override
-            public X getElement() {
-                return input.getElement();
-            }
-
-            @Override
-            public boolean advance() {
-                if(input.advance() && cursor < max){
-                    cursor++;
-                    return true;
-                }
-                return false;
-            }
-            
-        };
+        return fromIterator(toStream(input).limit(max).iterator());
     }
 
     @Override
     public <X> void forEach(Cursor<X> input, Consumer<X> consumer) {
-        do{
-            consumer.accept(input.getElement());
-        }while(input.advance());
+        toStream(input).forEach(consumer);
     }
 
     @Override
     public <X> List<X> toList(Cursor<X> input, int max) {
-        List<X> outer = new ArrayList<>();
-        for (int i = 0; i < max; i++) {
-            outer.add(input.getElement());
-            if(!input.advance()){
-                break;
-            }
-        }
-        return List.copyOf(outer);
+        return toStream(input).limit(max).toList();
     }
     
 }

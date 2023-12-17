@@ -21,7 +21,7 @@ public class FlattenerFactoryImpl implements FlattenerFactory {
     public Flattener<String, String> concatPairs() {
         return li -> IntStream.range(
             0, 
-            Double.valueOf(Math.ceil(li.size() / 2)).intValue()
+            (li.size() % 2 + li.size()) / 2
         )
         .mapToObj(
             i -> li.stream()
