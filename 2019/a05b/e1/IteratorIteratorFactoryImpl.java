@@ -1,45 +1,38 @@
 package a05b.e1;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
+import java.util.function.Function;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class IteratorIteratorFactoryImpl implements IteratorIteratorFactory {
 
-    @Override
-    public <E> Iterator<Iterator<E>> constantWithSingleton(E e) {
-        return Stream.generate(() -> Stream.generate(() -> e).iterator()).iterator();
-    }
-
-    @Override
-    public <E> Iterator<Iterator<E>> increasingSizeWithSingleton(E e) {
-        return Stream.generate(() -> Stream.iterate(new ArrayList<>(List.of(e)), n -> {n.add(e); return n;}).flatMap(List::stream).iterator()).iterator();
-    }
-
-    @Override
-    public Iterator<Iterator<Integer>> squares() {
-
-        return Stream.iterate(0, i -> i + 1)
+    private <E> Iterator<Iterator<E>> iteratorIncreasing(Function<IntStream, Stream<E>> func, boolean even) {
+        return Stream.iterate(1, i -> i + (even ? 2 : 1))
             .map(i -> 
-                Stream.concat(
-                    Stream.iterate(0,n -> ((n * n) + 1) * 2).limit(i),
-                    Stream.of(i * i)
-                ).iterator()
+                func.apply(IntStream.range(0, i))
+                .iterator()
             ).iterator();
     }
 
     @Override
+    public <E> Iterator<Iterator<E>> constantWithSingleton(E e) {
+        return Stream.generate(() -> Stream.of(e).iterator()).iterator();
+    }
+
+    @Override
+    public <E> Iterator<Iterator<E>> increasingSizeWithSingleton(E e) {
+        return iteratorIncreasing(s -> s.mapToObj(o -> e), false);
+    }
+
+    @Override
+    public Iterator<Iterator<Integer>> squares() {
+        return iteratorIncreasing(s -> s.mapToObj(k -> k * k), false);
+    }
+
+    @Override
     public Iterator<Iterator<Integer>> evens() {
-        var t = Stream.generate(() -> 
-            Stream.iterate(0, i -> i + 1)
-            .flatMap(i -> 
-                Stream.iterate(new ArrayList<Integer>(List.of(i)), 
-                n -> {n.add(i + 2); return n;}).flatMap(List::stream)
-            ).iterator()).iterator();
-        return t;
+        return iteratorIncreasing(s -> s.boxed().filter(k -> k % 2 == 0), true);
     }
 
 }
