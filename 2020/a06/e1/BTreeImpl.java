@@ -4,7 +4,6 @@ package a06.e1;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.*;
-import a06.e1.BTreeFactoryImpl;
 
 /**
  * the interface for a binary tree, where each leafs holds a value of type L
