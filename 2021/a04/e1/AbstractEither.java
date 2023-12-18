@@ -5,9 +5,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import javax.swing.plaf.OptionPaneUI;
-import javax.swing.text.html.Option;
-
 public abstract class AbstractEither<A,B> implements Either<A, B>{
     private boolean failed;
     private Optional<B> cur;
@@ -54,9 +51,7 @@ public abstract class AbstractEither<A,B> implements Either<A, B>{
             public Pair<Optional<A>, Optional<B1>> getCurrent() {
                 return new Pair<>(Optional.empty(), mapper);
             } 
-        };
-              
-        
+        };       
         
     }
 

@@ -39,7 +39,7 @@ public class Test {
 	
 	@org.junit.Before
 	public void initFactory() {
-		//this.factory = new CirclerFactoryImpl();
+		this.factory = new CirclerFactoryImpl();
 	}
 	
 	@org.junit.Test
