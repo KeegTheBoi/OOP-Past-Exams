@@ -36,8 +36,8 @@ public class WorkflowsFactoryImpl implements WorkflowsFactory {
     public <T> Workflow<T> concat(Workflow<T> first, Workflow<T> second) {
         return new Workflow<T>() {
 
-            Set<T> firstTasks = first.getNextTasksToDo();
-            Set<T> secondTasks = second.getNextTasksToDo();
+            Set<T> firstTasks = first.getTasks();
+            Set<T> secondTasks = second.getTasks();
 
             @Override
             public Set<T> getTasks() {

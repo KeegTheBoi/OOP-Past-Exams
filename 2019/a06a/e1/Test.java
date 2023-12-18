@@ -37,7 +37,7 @@ public class Test {
 
 	@org.junit.Before
 	public void initFactory() {
-		//this.srf = new SRServiceFactoryImpl();
+		this.srf = new SRServiceFactoryImpl();
 	}
 
 	@org.junit.Test
