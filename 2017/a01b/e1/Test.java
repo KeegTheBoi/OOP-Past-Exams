@@ -28,7 +28,7 @@ import java.util.*;
 
 public class Test {
 	
-	/*
+	
 	// funzionalità a fini interni, che estrae tempi e valori da un trace
 	private <X> Pair<List<Integer>,List<X>> traceToPairs(Trace<X> t){
 		Iterator<Event<X>> it = t.iterator();
@@ -45,7 +45,7 @@ public class Test {
 	@org.junit.Test
     public void testNextEvent() {
         // Test su creazione discrete
-        final Trace<String> t = new TraceFactoryImpl().discrete(()->"a", 2); // 0:a ; 1:a
+        final Trace<String> t = new TraceImpl().discrete(()->"a", 2); // 0:a ; 1:a
         Optional<Event<String>> e;
         e = t.nextEvent();
         assertTrue(e.isPresent() && e.get().getTime()==0 && e.get().getValue().equals("a"));
@@ -58,7 +58,7 @@ public class Test {
 	@org.junit.Test
     public void testDiscrete() {
         // Test su creazione discrete
-        final Trace<String> t = new TraceFactoryImpl().discrete(()->"a", 5); // 0:a ; 1:a ; .. 4;a
+        final Trace<String> t = new TraceImpl().discrete(()->"a", 5); // 0:a ; 1:a ; .. 4;a
         final Pair<List<Integer>,List<String>> p = traceToPairs(t);
         assertEquals(p.getFst(),Arrays.asList(0,1,2,3,4));
         assertEquals(p.getSnd(),Arrays.asList("a","a","a","a","a"));
@@ -67,7 +67,7 @@ public class Test {
 	@org.junit.Test
     public void testConstant() {
         // Test su creazione constant
-        final Trace<String> t = new TraceFactoryImpl().constant(()->2, "a", 5); // 0:a ; 2:a ; 4:a ; .. ; 8:a
+        final Trace<String> t = new TraceImpl().constant(()->2, "a", 5); // 0:a ; 2:a ; 4:a ; .. ; 8:a
         final Pair<List<Integer>,List<String>> p = traceToPairs(t);
         assertEquals(p.getFst(),Arrays.asList(0,2,4,6,8));
         assertEquals(p.getSnd(),Arrays.asList("a","a","a","a","a"));
@@ -76,7 +76,7 @@ public class Test {
 	@org.junit.Test
     public void testFromSuppliers() {
         // Test su creazione da suppliers
-        final Trace<String> t = new TraceFactoryImpl().fromSuppliers(()->2, ()->Math.random()>0.5?"a":"b", 5);
+        final Trace<String> t = new TraceImpl().fromSuppliers(()->2, ()->Math.random()>0.5?"a":"b", 5);
         // esempio: 0:a ; 2:b ; 4:b ; 6:b ; 8:a
         final Pair<List<Integer>,List<String>> p = traceToPairs(t);
         assertEquals(p.getFst(),Arrays.asList(0,2,4,6,8));
@@ -89,9 +89,10 @@ public class Test {
 	@org.junit.Test
     public void testSkip() {
         // Test metodo skip
-		final Trace<String> t = new TraceFactoryImpl().fromSuppliers(()->2, ()->"a", 5);
+		final Trace<String> t = new TraceImpl().fromSuppliers(()->2, ()->"a", 5);
 		// t rappresenta 0:a ; 2:b ; 4:b ; 6:b ; 8:a
         t.skipAfter(2);
+        
 		// t rappresenta 4:b ; 6:b ; 8:a
         final Pair<List<Integer>,List<String>> p = traceToPairs(t);
         assertEquals(p.getFst(),Arrays.asList(4,6,8));
@@ -101,7 +102,7 @@ public class Test {
 	@org.junit.Test
     public void testSkipOver() {
         // Test metodo skip
-		final Trace<String> t = new TraceFactoryImpl().fromSuppliers(()->2, ()->"a", 5);
+		final Trace<String> t = new TraceImpl().fromSuppliers(()->2, ()->"a", 5);
 		// t rappresenta 0:a ; 2:b ; 4:b ; 6:b ; 8:a
         t.skipAfter(10);
 		// t è vuoto
@@ -113,9 +114,9 @@ public class Test {
 	@org.junit.Test
     public void testCombine() {
         // Test metodo combine
-		final Trace<String> t = new TraceFactoryImpl().fromSuppliers(()->2, ()->"a", 3); //t è 0:a,2:a,4:a
+		final Trace<String> t = new TraceImpl().fromSuppliers(()->2, ()->"a", 3); //t è 0:a,2:a,4:a
 		t.nextEvent(); // ora t è 2:a,4:a
-		final Trace<String> t2 = new TraceFactoryImpl().fromSuppliers(()->5, ()->"b", 2); //t2: 0:b,5:b
+		final Trace<String> t2 = new TraceImpl().fromSuppliers(()->5, ()->"b", 2); //t2: 0:b,5:b
 		final Trace<String> t3 = t2.combineWith(t); // 0:b, 2:a, 4:a, 5:b 
         final Pair<List<Integer>,List<String>> p = traceToPairs(t3);
         assertEquals(p.getFst(),Arrays.asList(0,2,4,5));
@@ -125,14 +126,14 @@ public class Test {
 	@org.junit.Test
     public void optionalTestDropValues() {
         // Test metodo combine
-		final Trace<String> t = new TraceFactoryImpl().fromSuppliers(()->2, ()->"a", 3); //t è 0:a,2:a,4:a
+		final Trace<String> t = new TraceImpl().fromSuppliers(()->2, ()->"a", 3); //t è 0:a,2:a,4:a
 		t.nextEvent(); // ora t è 2:a,4:a
-		final Trace<String> t2 = new TraceFactoryImpl().fromSuppliers(()->5, ()->"b", 2); //t2: 0:b,5:b
+		final Trace<String> t2 = new TraceImpl().fromSuppliers(()->5, ()->"b", 2); //t2: 0:b,5:b
 		final Trace<String> t3 = t2.combineWith(t); // 0:b, 2:a, 4:a, 5:b 
         final Trace<String> t4 = t3.dropValues("a"); // 0:b, 5:b
         final Pair<List<Integer>,List<String>> p = traceToPairs(t4);
         assertEquals(p.getFst(),Arrays.asList(0,5));
         assertEquals(p.getSnd(),Arrays.asList("b","b"));
     }
-    */
+    
 }
