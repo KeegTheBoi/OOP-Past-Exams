@@ -61,11 +61,14 @@ public class GridImpl<X> implements Grid<X> {
 
 	@Override
 	public Iterator<Cell<X>> iterator(boolean onlyNonNull) {
-		return IntStream.range(0,this.rows)
+		return null;
+		/*
+		 * IntStream.range(0,this.rows)
 						.boxed()
 				        .flatMap(r-> IntStream.range(0,this.columns).boxed().map(c->new Pair<>(r,c)))
 				        .map(p -> new Cell<>(p.getX(),p.getY(),map.get(p)))
 				        .filter(p -> !onlyNonNull || p.getValue()!=null)
 				        .iterator();
+		 */
 	}
 }

@@ -3,6 +3,7 @@ package a01a.e1;
 import static org.junit.Assert.*;
 import java.util.*;
 
+
 /**
  * Si consulti la documentazione delle interfacce fornite:
  * - InfiniteSequence<X> modella una sorgente infinita e sequenziale di dati di tipo X
@@ -24,7 +25,7 @@ import java.util.*;
 
 public class Test {
 	
-	/*
+	
 	
 	@org.junit.Test
     public void testValue() {
@@ -116,6 +117,6 @@ public class Test {
         assertTrue(it.hasNext());
 	}
 	
-	*/
+	
     
 }
