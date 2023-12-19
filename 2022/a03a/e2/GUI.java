@@ -1,26 +1,19 @@
 package a03a.e2;
 
-import javax.management.modelmbean.ModelMBeanInfo;
-import javax.naming.event.ObjectChangeListener;
 import javax.swing.*;
 
 
 import java.util.*;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.function.Predicate;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 import java.awt.*;
 import java.awt.event.*;
 
 public class GUI extends JFrame {
     
     private final Map<JButton, Coord> cells = new LinkedHashMap<>();
-    private final Logic modello;
+    private final Logic log;
     
     public GUI(int size) {
-        modello = new LogicImpl(size);
+        this.log = new LogicImpl(size);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setSize(100*size, 100*size);
         
@@ -31,9 +24,12 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent e){
         	    var button = (JButton)e.getSource();
         	    var position = cells.get(button);
-                
-                    
-              
+                log.hit(position);
+                if(log.isOVer()) {
+                    System.out.println(log.getMap().values().stream().findAny().get() + " wins");
+                    System.exit(size);
+                }
+                draw();      
             }
         };
                 
@@ -46,7 +42,20 @@ public class GUI extends JFrame {
             }
             
         }
+        draw(); 
         this.setVisible(true);
+    }
+
+    protected void draw() {
+
+        cells.forEach((k, v) -> {
+            if(log.getMap().containsKey(v)) {
+                k.setText(log.getMap().get(v).getSymbol());
+            }
+            else {
+                k.setText("");
+            }
+        });
     }    
 
    

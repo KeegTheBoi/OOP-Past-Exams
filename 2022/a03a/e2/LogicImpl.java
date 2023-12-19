@@ -13,10 +13,9 @@ public class LogicImpl implements Logic {
     private Coord lastHuman;
     private Coord lastComp;
     private Random rand = new Random();
-    private Optional<Boolean> pc;
 
     private enum Direction {
-        VERTICAL((c, v) -> new Coord(c.x(), v)), HORIZZONTAL((c, v) -> new Coord(c.x(), v));
+        VERTICAL((c, v) -> new Coord(c.x(), v)), HORIZZONTAL((c, v) -> new Coord(v, c.y()));
 
         private BiFunction<Coord, Integer, Coord> nextPos;
 
@@ -29,8 +28,6 @@ public class LogicImpl implements Logic {
         }
     }
 
-
-
     public LogicImpl(int size) {
         this.size = size;
         mapper = new HashMap<>();
@@ -42,35 +39,37 @@ public class LogicImpl implements Logic {
         mapper.put(lastHuman, Player.HUMAN);
         do {
             lastComp = new Coord(rand.nextInt(size), rand.nextInt(size));       
-        }while(mapper.containsKey(lastHuman));
+        }while(lastComp.equals(lastHuman));
         mapper.put(lastComp, Player.COMPUTER);
     }
 
     @Override
     public void hit(Coord c) {
         if(c.x() == lastHuman.x() || c.y() == lastHuman.y()) {
-            mapper.remove(lastHuman);
+            if(move(Player.HUMAN, c, lastHuman)) {
+                return;
+            };
             lastHuman = c;
-            if(mapper.containsKey(c) && mapper.get(c).equals(Player.COMPUTER)) {
+            if(lastHuman.x() == lastComp.x() || lastHuman.y() == lastComp.y()) {
                 isOv = true;
-                pc = false;
+                mapper.remove(lastHuman);
                 return;
             }
-            mapper.put(lastHuman, Player.HUMAN);
-            if(movePC()) {
-                pc = true;
-            }
+            Coord newPos = Direction.values()[rand.nextInt(2)].getPos(lastComp, rand.nextInt(size));
+            move(Player.COMPUTER, newPos, lastComp);
+            lastComp = newPos;
         }
         
     }
 
-    private boolean movePC() {
-        Coord newPos = Direction.values()[rand.nextInt(2)].getPos(lastHuman, rand.nextInt(size));
-        if(mapper.containsKey(newPos) && mapper.get(newPos).equals(Player.HUMAN)) {
+    private boolean move(Player p, Coord pos, Coord old) {
+        mapper.remove(old);
+        if(mapper.containsKey(pos) && mapper.get(pos).equals(p.equals(Player.HUMAN) ? Player.COMPUTER : Player.HUMAN)) {
             isOv = true;
-            return true;
+            mapper.remove(p.equals(Player.HUMAN) ? lastComp : lastHuman);
         }
-        return false;
+        mapper.put(pos, p);
+        return isOv;
     }
 
     @Override
