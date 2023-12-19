@@ -9,9 +9,11 @@ import java.awt.event.ActionListener;
 public class GUI extends JFrame {
     
     private static final long serialVersionUID = -6218820567019985015L;
-    private final List<JButton> cells = new ArrayList<>();
+    private final Map<JButton, Coord > cells = new HashMap<>();
+    private final Logic log;
     
     public GUI(int size) {
+        log = new LogicImpl(size);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setSize(100*size, 100*size);
         
@@ -20,19 +22,38 @@ public class GUI extends JFrame {
         
         ActionListener al = e -> {
         	var button = (JButton)e.getSource();
-        	var position = cells.indexOf(button);
-        	button.setText(""+position);
+        	var position = cells.get(button);
+        	log.hit(position);
+            if(log.isOver()) {
+                System.exit(size);
+            }
+            draw();
         };
                 
         for (int i=0; i<size; i++){
             for (int j=0; j<size; j++){
                 final JButton jb = new JButton(" ");
-                this.cells.add(jb);
+                this.cells.put(jb, new Coord(j, i));
                 jb.addActionListener(al);
                 panel.add(jb);
             }
         }
+         draw();
         this.setVisible(true);
+    }
+
+    private void draw() {
+        this.cells.forEach((k, v) -> {
+            if(log.getMap().containsKey(v)) {
+                if(log.getMap().get(v) instanceof Integer) {
+                    int number = (Integer)log.getMap().get(v);
+                    k.setText(String.valueOf(number));
+                }
+                if(log.getMap().get(v) instanceof String) {
+                    k.setText("X");
+                }
+            }
+        });
     }
     
 }
