@@ -32,28 +32,18 @@ public class EquivalenceFactoryImpl implements EquivalenceFactory {
 
     @Override
     public <X> Equivalence<X> fromPairs(Set<Pair<X, X>> pairs) {
-        return fromFunction(
-            pairs.stream()
-            .map(Pair::getY)
-                .collect(Collectors.toSet()),
-            x -> pairs.stream()
-                .filter( p -> p.getX() == x)//not testing
-                .findFirst()
-                .get().getY()
-            );
+        return new EquivalenceImpl<>(pairs.stream().collect(Collectors.groupingBy(Pair::getX, Collectors.mapping(Pair::getY, Collectors.toSet()))));    
     }
 
     @Override
     public <X, Y> Equivalence<X> fromFunction(Set<X> domain, Function<X, Y> function) {
-       return new EquivalenceImpl<>(
-            domain.stream()
-            .collect(
-                Collectors.groupingBy(
-                    function, 
-                    Collectors.toSet()
-                )
-            )           
-       );
+       return new EquivalenceImpl<>(domain.stream()
+       .collect(
+           Collectors.groupingBy(
+               function, 
+               Collectors.toSet()
+           )
+       ));
     }
 
 }
