@@ -5,9 +5,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,6 +41,10 @@ public class EventSequencerProducerHelpersImpl implements EventSequenceProducerH
 
     @Override
     public <E> List<E> window(EventSequenceProducer<E> sequence, double fromTime, double toTime) {
+        List<Integer> lisy= new ArrayList<>(List.of(54, 54, 542));
+        Stream.iterate(lisy.iterator(), i -> i.hasNext(), UnaryOperator.identity()).map(i -> i.next()).collect(Collectors.toList());
+
+
         return eventToStream(sequence).stream().
             dropWhile(c -> c.get1() < fromTime).takeWhile(r -> r.get1() < toTime).map(s -> s.get2()).
             collect(Collectors.toList());
