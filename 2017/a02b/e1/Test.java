@@ -26,7 +26,7 @@ public class Test {
 	 * 
 	 */
 	
-	/*
+	
 	
 	@org.junit.Test
 	public void testConcatenator() {
@@ -157,7 +157,7 @@ public class Test {
 		t.getOutputElement();
 	}
 	
-	*/
+	
 	
 }
 
