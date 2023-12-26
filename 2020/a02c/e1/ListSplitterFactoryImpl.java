@@ -10,15 +10,10 @@ import java.util.stream.IntStream;
 public class ListSplitterFactoryImpl implements ListSplitterFactory {
 
     private <X> ListSplitter<X> splitFixed(final int dividend, final boolean offset){
-        return new ListSplitter<X>() {
-
-            @Override
-            public List<List<X>> split(List<X> list) {
-                return IntStream.range(0, ((offset ? (list.size() + dividend)  % dividend : 0) + list.size()) / dividend)
-                    .mapToObj(y -> list.stream().skip(dividend * y).limit(dividend).collect(Collectors.toList()))
-                    .collect(Collectors.toList());
-            }
-        };
+        return l-> IntStream.range(0, ((offset ? (l.size() + dividend)  % dividend : 0) + l.size()) / dividend)
+                .mapToObj(y -> l.stream().skip(dividend * y).limit(dividend).collect(Collectors.toList()))
+                .collect(Collectors.toList());
+            
     }
 
     @Override
