@@ -11,24 +11,14 @@ public class PatternExtractorFactoryImpl implements PatternExtractorFactory {
 
 
     private <T, O> PatternExtractor<T, O> general(Function<Stream<T>, O> sup, Predicate<T> predicate){
-        return new PatternExtractor<T,O>() {
-
-            @Override
-            public List<O> extract(List<T> input) {
-                int delta;
-                final List<O> out = new ArrayList<>();
-                for (int i = 0; i < input.size(); i+=delta) {
-                    var stream = input.stream().skip(i).dropWhile(predicate.negate()).takeWhile(predicate);
-                    var count = input.stream().skip(i+1).dropWhile(predicate.negate()).takeWhile(predicate).collect(Collectors.toList()).size();
-                    if(count > 0) {
-                        out.add(sup.apply(stream));
-                    }                                  
-                    delta = count + 1;
-                }
-                return out.stream().collect(Collectors.toList());
-            }
+        return input -> Stream.iterate(
+                input.stream(),
+                    f -> !f.isEmpty(),
+                    s-> s.dropWhile(predicate.negate())
+                            .takewhile(predicate)
+                ).map(sup)
+                .collect(Collectors.toList()));
             
-        };
     }
 
     @Override
