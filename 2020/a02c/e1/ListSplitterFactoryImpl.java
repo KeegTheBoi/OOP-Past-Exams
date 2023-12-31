@@ -9,59 +9,56 @@ import java.util.stream.IntStream;
 
 public class ListSplitterFactoryImpl implements ListSplitterFactory {
 
-    private <X> ListSplitter<X> splitFixed(final int dividend, final boolean offset){
-        return l-> IntStream.range(0, ((offset ? (l.size() + dividend)  % dividend : 0) + l.size()) / dividend)
-                .mapToObj(y -> l.stream().skip(dividend * y).limit(dividend).collect(Collectors.toList()))
+    private static class Splitter<X> implements ListSplitter<X>{
+
+        private int delta;
+        private Predicate<Integer> pred;
+
+        public Splitter(final Predicate<Integer> pred) {
+            this.pred = pred;
+        }
+        
+        @Override
+        public List<List<X>> split (List<X> list) {
+            return Stream.iterate(0, d -> d < list.size(), i -> i + delta)
+                .map (k -> 
+                    Optional.of(sequence(k, list, pred))
+                    .filter(h-> !h.isEmpty())
+                    .orElse(sequence(k, list, pred.negate()))
+                )
+                .peek(t -> delta = t.size())
                 .collect(Collectors.toList());
-            
+        }
+
+        private List<X> sequence(final int offset, final List<X> list) {
+            return IntStream.range(0, list.size()).boxed().skip(offset).takeWhile(pred).map(list::get).collect(Collectors.toList());
+        }
     }
+
 
     @Override
     public <X> ListSplitter<X> asPairs() {
-        return splitFixed(2, false);
+        return new Splitter<>(i -> i / 2 % 2 == 0);
     }
 
     @Override
     public <X> ListSplitter<X> asTriplets() {
-        return splitFixed(3, false);
+        return new Splitter<>(i -> i / 3 % 2 == 0);
     }
 
     @Override
     public <X> ListSplitter<X> asTripletsWithRest() {
-        return splitFixed(3, true);
+        return new Splitter<>(i -> i / 3 % 2 == 0);
     }
 
     @Override
     public <X> ListSplitter<X> bySeparator(X separator) {
-        return byPredicate(c -> !c.equals(separator));
+        return byPredicate(c -> c.equals(separator));
     }
 
     @Override
     public <X> ListSplitter<X> byPredicate(Predicate<X> predicate) {
-        return new ListSplitter<X>() {
-
-            @Override
-            public List<List<X>> split(final List<X> list) {
-                int delta = 0;
-                boolean first = false;
-                final List<List<X>> outer = new ArrayList<>();
-                for (int i = 0; i < list.size(); i+=delta) {
-                    int skip;
-                    if(!first){
-                        skip = list.stream().skip(i + 1).takeWhile(predicate).collect(Collectors.toList()).size();
-                        outer.add(list.stream().skip(i).takeWhile(predicate).collect(Collectors.toList()));
-                        first = true;
-                    } else {
-                        skip = list.stream().skip(i + 1).takeWhile(predicate.negate()).collect(Collectors.toList()).size();
-                        outer.add(list.stream().skip(i).takeWhile(predicate.negate()).collect(Collectors.toList()));
-                        first = false;
-                    }
-                    
-                    delta = skip + 1;
-                }
-                return Collections.unmodifiableList(outer);
-            }
-        };
+        return new Splitter<>(i -> predicate.test(l.get(i));
     }
     
 }
