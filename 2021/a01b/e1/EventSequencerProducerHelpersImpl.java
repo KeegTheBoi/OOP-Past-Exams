@@ -18,42 +18,31 @@ public class EventSequencerProducerHelpersImpl implements EventSequenceProducerH
         return iterator::next;                  
     }
 
-    private <E> List<Pair<Double, E>> eventToStream(EventSequenceProducer<E> sequence){
-        List<Pair<Double, E>> listOuter = new ArrayList<>();
-        var iterEvents = Stream.generate(() -> sequence.getNext()).iterator();
+    peivate <E> Optional<E> extract(EventSequenceProducer<E> seq) {
         try {
-            while(iterEvents.hasNext()){
-            listOuter.add(iterEvents.next());
-        }
+            return Optional.of(seq.getNext());
         } catch (NoSuchElementException e) {
-            return Collections.unmodifiableList(listOuter);
+            return Optional.empty;
         }
-        return Collections.unmodifiableList(listOuter);
-        
 
+    }
+
+    private <E> Stream<Pair<Double, E>> eventToStream(EventSequenceProducer<E> sequence){
+        return Stream.generate(() -> extract(sequence)).takeWhile(Optional::isPresent).map(Optional::get);
     }
 
     @Override
     public <E> List<E> window(EventSequenceProducer<E> sequence, double fromTime, double toTime) {
-        List<Integer> lisy= new ArrayList<>(List.of(54, 54, 542));
-        Stream.iterate(lisy.iterator(), i -> i.hasNext(), UnaryOperator.identity()).map(i -> i.next()).collect(Collectors.toList());
-
-
-        return eventToStream(sequence).stream().
-            dropWhile(c -> c.get1() < fromTime).takeWhile(r -> r.get1() < toTime).map(s -> s.get2()).
-            collect(Collectors.toList());
+        return eventToStream(sequence)
+            .dropWhile(c -> c.get1() < fromTime)
+            .takeWhile(r -> r.get1() < toTime)
+            .map(s -> s.get2())
+            .collect(Collectors.toList());
     }
 
     @Override
     public <E> Iterable<E> asEventContentIterable(EventSequenceProducer<E> sequence) {
-        return new Iterable<E>() {
-
-            @Override
-            public Iterator<E> iterator() {
-                return eventToStream(sequence).stream().map(v -> v.get2()).iterator();
-            }
-            
-        };
+        return ()-> eventToStream(sequence).stream().map(v -> v.get2()).iterator();
     }
 
     @Override
