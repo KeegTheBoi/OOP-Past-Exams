@@ -10,17 +10,8 @@ import java.util.stream.Stream;
 
 public class SubsequenceCombinerFactoryImpl implements SubsequenceCombinerFactory {
    
-    /**
-     * @return a SubsequenceCombiner that turns triplets of
-    integers into their sum
-     * e.g.: e1,e2,e3,e4,e5,e6,e7,e8 --> (e1+e2+e3),(e4+e5+e6),
-    (e7+e8)
-     */
-    public SubsequenceCombiner<Integer,Integer> tripletsToSum() {
-        return terminalOperation(s ->  s.mapToInt(Integer::intValue).sum());
-    }
-
-    private <X, L> SubsequenceCombiner<X,L>  terminalOperation(Function<Stream<X>, L> mapper) {
+     
+    private <X, L> SubsequenceCombiner<X,L>  tripletsMapper(Function<Stream<X>, L> mapper) {
         return re -> IntStream.range(0, (re.size() + (re.size() % 3)) / 3)
             .mapToObj(
                 i -> mapper.apply(
@@ -29,10 +20,18 @@ public class SubsequenceCombinerFactoryImpl implements SubsequenceCombinerFactor
                     .limit(3))              
             ).collect(Collectors.toList()); 
     }
-
+    /**
+     * @return a SubsequenceCombiner that turns triplets of
+    integers into their sum
+     * e.g.: e1,e2,e3,e4,e5,e6,e7,e8 --> (e1+e2+e3),(e4+e5+e6),
+    (e7+e8)
+     */
+    public SubsequenceCombiner<Integer,Integer> tripletsToSum() {
+        return tripletsMapper(s ->  s.mapToInt(Integer::intValue).sum());
+    }
      
     public <X> SubsequenceCombiner<X,List<X>> tripletsToList() {
-        return terminalOperation(s -> s.collect(Collectors.toList()));
+        return tripletsMapper(s -> s.collect(Collectors.toList()));
     }
     
     private int nextInd;
