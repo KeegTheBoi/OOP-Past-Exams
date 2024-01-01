@@ -65,22 +65,24 @@ public class SubsequenceCombinerFactoryImpl implements SubsequenceCombinerFactor
      * overcomes @threshold into a list of them
      * for an example, look at its testcase in class Test
      */
+    private int delta;
+    private int cum;
+
     public SubsequenceCombiner<Integer,List<Integer>> cumulateToList(int threshold) {
-       return re -> cumulate(re, threshold);
+       return re -> Stream.iterate(0, i -> i < e.size(), i-> i + delta)
+            .map(sk-> 
+               re.stream()
+               .skip(sk)    
+               .takeWhile(u -> cum < treshold)
+               .peek(k -> cum += k) 
+               .collect(Collectors.toList())
+            ).peek(l-> delta = l.size())
+            .peek(h -> cum = 0)
+            .collect(Collectors.toList());
     }
 
-    private List<List<Integer>> cumulate(List<Integer> re , int threshold) {
-        var outerList = new ArrayList<Integer>();
-        return Stream.concat(re.stream().collect(
-            ArrayList<List<Integer>>::new, 
-            (o, n)-> {
-                outerList.add(n);
-                if(outerList.stream().mapToInt(Integer::intValue).sum() >= threshold) {
-                    o.add(List.copyOf(outerList));
-                    outerList.clear();
-                }                      
-            }, List::addAll).stream(), Stream.of(outerList)).toList();
-    }
+    
+
     
    
 }
