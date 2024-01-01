@@ -15,7 +15,7 @@ public class EventSequencerProducerHelpersImpl implements EventSequenceProducerH
 
     @Override
     public <E> EventSequenceProducer<E> fromIterator(Iterator<Pair<Double, E>> iterator) {
-        return () -> iterator.next();                  
+        return iterator::next;                  
     }
 
     private <E> List<Pair<Double, E>> eventToStream(EventSequenceProducer<E> sequence){
