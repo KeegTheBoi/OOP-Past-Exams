@@ -2,10 +2,8 @@ package a04.e2;
 
 import javax.swing.*;
 import java.util.*;
-import java.util.List;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.stream.*;
 import java.util.Map;
 
 public class GUI extends JFrame {

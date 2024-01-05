@@ -1,6 +1,5 @@
 package a01a.e1;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.*;
 import java.util.function.Predicate;
@@ -22,7 +21,7 @@ public class SubsequenceCombinerFactoryImpl implements SubsequenceCombinerFactor
     }
 
     public SubsequenceCombiner<Integer, Integer> countUntilZero() {
-        return combinerMap(r -> r != 0, s -> (int)s.count(), t -> t, u -> delta = u + 1);
+        return combinerMap(r -> r != 0, s -> (int)s.count(), t -> {}, u -> delta = u + 1);
     }
 
     public <X, Y> SubsequenceCombiner<X, Y> singleReplacer(Function<X, Y> function) {

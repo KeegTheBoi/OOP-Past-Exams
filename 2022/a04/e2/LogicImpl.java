@@ -1,14 +1,12 @@
 package a04.e2;
 
 import java.util.*;
-import java.util.function.*;
 import java.util.stream.*;
 
 public class LogicImpl implements Logic{
 
     private final int size;
     private Coord computer;
-    private boolean isOv;
 	private Coord human;
     private Random rand = new Random();
 
