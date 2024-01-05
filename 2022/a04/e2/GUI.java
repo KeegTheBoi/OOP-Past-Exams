@@ -5,6 +5,8 @@ import java.util.*;
 import java.util.List;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.stream.*;
+import java.util.Map;
 
 public class GUI extends JFrame {
     
@@ -23,13 +25,17 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent e){
         	    var button = (JButton)e.getSource();
         	    var position = cells.get(button);
-                if(log.hit(position)) {
-                    System.out.println("Vittoria");
-                }
+                
+                log.hit(position).ifPresent(p -> {
+					clear();
+					button.setText("R");
+					reverseButton(p).setText("K");
+				});
                 if(log.isOver()) {
-                    System.exit(43);
+					System.out.println("Someone has won");
+                    System.exit(0);
                 }
-                draw();
+                
             }
         };
                 
@@ -45,14 +51,16 @@ public class GUI extends JFrame {
         this.setVisible(true);
     }
 
-    private void draw() {
-        this.cells.forEach((k, v) -> {
-            if(log.getMap().containsKey(v)) {
-                k.setText(log.getMap().get(v).getSymobl());
-            }
-            else {
-                 k.setText("");
-            }
-        });
-    }    
+	private void clear() {
+		this.cells.keySet().forEach(k -> k.setText(""));
+	}
+	
+	private void draw() {
+		reverseButton(log.getPlayers().getX()).setText("R");
+		reverseButton(log.getPlayers().getY()).setText("K");
+	}
+	
+	private JButton reverseButton(Coord c) {
+		return cells.entrySet().stream().filter(e -> e.getValue().equals(c)).map(Map.Entry::getKey).findFirst().get();
+	}
 }

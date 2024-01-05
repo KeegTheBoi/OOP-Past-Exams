@@ -1,87 +1,74 @@
 package a04.e2;
 
 import java.util.*;
+import java.util.function.*;
+import java.util.stream.*;
 
-
-public class LogicImpl implements Logic, a02a.e2.Logic{
+public class LogicImpl implements Logic{
 
     private final int size;
-    private final Map<Coord, Role> map;
+    private Coord computer;
     private boolean isOv;
-    private Coord lastHuman;
-    private Coord lastComp;
+	private Coord human;
     private Random rand = new Random();
 
     public LogicImpl(int size) {
         this.size = size;
-        this.map = new HashMap<Coord, Role>();
         init();
     }
+    
+    @Override
+    public Pair<Coord, Coord> getPlayers() {
+		return new Pair<>(human, computer);
+	}
 
-    void init() {
-        lastHuman = new Coord(rand.nextInt(size), rand.nextInt(size));
-        do {
-            lastComp = new Coord(rand.nextInt(size), rand.nextInt(size));
-        }while(lastHuman.equals(lastComp));
-        map.put(lastHuman, Role.HUMAN);
-        map.put(lastComp, Role.COMPUTER);
+    private void init() {
+        human = randomPosition();
+        computer = Optional.of(randomPosition()).filter(r -> !r.equals(human)).orElse(randomPosition());
+        System.out.println(human);
+        System.out.println(computer);
     }
+    
+    private Coord randomPosition() {
+		return new Coord(rand.nextInt(this.size), rand.nextInt(this.size)); 
+	}
 
     @Override
-    public boolean hit(Coord c) {
-        if(isValid(c)) {
-            checkMove(Role.HUMAN, Role.COMPUTER, lastHuman, c);
-            if(isOv) {
-                return true;
-            }
-            lastHuman = c;
-            if(this.isAdjax(lastHuman, lastComp)) {
-                isOv = true;
-                return false;
-            }
-            Coord newPos = getNewComp();
-            checkMove(Role.COMPUTER, Role.HUMAN, lastComp, newPos);
-            lastComp = newPos;
-        }
-        return false;
+    public Optional<Coord> hit(Coord c) {
+		return Optional.of(c).filter(this::isPlayerValid).map(this::newPosition);
     }
-
-    private Coord getNewComp() {
-        Coord newPos;
-        do {
-            newPos = new Coord(rand.nextInt(size), rand.nextInt(size));
-        }while(!isAdjax(newPos, lastComp));
-        return newPos;
-    }
-
-    private boolean isValid(Coord c) {
-        return c.x() == lastHuman.x() 
-        || c.y() == lastHuman.y() 
-        || lastHuman.x() < c.x() ? c.x() >= lastComp.x() : c.x() <= lastComp.x()
-        || lastHuman.y() < c.y() ? c.y() >= lastComp.y() : c.y() <= lastComp.y() ;
-    }
-
-    private boolean isAdjax(Coord c1, Coord c2){
-        return Math.abs(c1.x() - c2.x()) <= 1 && Math.abs(c1.y() - c2.y()) <= 1;
-    }
-
-    private void checkMove(Role p, Role enemy, Coord before, Coord after) {
-        map.remove(before);
-        if(map.containsKey(after) && map.get(after).equals(enemy)) {
-            isOv = true;
-            return;
-        }
-        map.put(after, p);
-    }
+    
+    private Coord newPosition(Coord c) {
+		human = c;
+		return computer = Optional.of(computer)
+			.filter(m -> !this.adjaxSet(m).contains(human) && !c.equals(m))
+			.map(k -> this.adjaxSet(k).stream().findAny().get())
+			.orElse(human);
+	}
+    
+    private boolean isPlayerValid(Coord c) {
+		return c.x() == human.x() || c.y() == human.y();
+	}
+    
+    private Set<Coord> adjaxSet(Coord c) {
+		return IntStream.rangeClosed(c.x() - 1, c.x() + 1)
+				.boxed()
+				.flatMap(i -> 
+					IntStream.rangeClosed(c.y() - 1, c.y() + 1)
+					.mapToObj(j -> new Coord(i, j))
+					.filter(this::inBound)
+					.filter(d -> !d.equals(c))
+				)
+				.collect(Collectors.toSet());
+	}
+	
+	private boolean inBound(Coord c) {
+		return c.x() >= 0 && c.y() < size && c.x() < size && c.y() >= 0;
+	}
 
     @Override
     public boolean isOver() {
-        return this.isOv;
-    }
-
-    @Override
-    public Map<Coord, Role> getMap() {
-        return this.map;
+        return human.equals(computer);
     }
 
 }

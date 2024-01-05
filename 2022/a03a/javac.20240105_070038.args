@@ -1,0 +1,10 @@
+-d
+bin/
+-cp
+/home/keeg/Scrivania/setup_test/mdl/junit-platform-console-standalone-1.10.1.jar
+-g
+./e1/ParserFactoryImpl.java
+./e1/ParserFactory.java
+./e1/Parser.java
+./e1/Pair.java
+./e1/Test.java

@@ -5,8 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collector;
+import java.util.function.*;
+import java.util.stream.*;
 import java.util.stream.Collectors;
 
 import javax.swing.plaf.OptionPaneUI;
@@ -15,64 +15,71 @@ public class ParserFactoryImpl implements ParserFactory{
 
     @Override
     public <X> Parser<X> fromFinitePossibilities(Set<List<X>> acceptedSequences) {
-        return new Parser<X>() {
-
-            @Override
-            public boolean accept(Iterator<X> iterator) {
-               return acceptedSequences.contains(mapToList(iterator));               
-            }
-            
-        };
+		return iterator -> acceptedSequences.contains(fromIterToList(iterator));               
     }
 
-    private <O> List<O> mapToList(Iterator<O> iter){
-        List<O> outList = new ArrayList<>();
-        while(iter.hasNext()){
-            outList.add(iter.next());
-        }
-        return outList;
+    private <O> List<O> fromIterToList(Iterator<O> iter){
+        return Stream.iterate(iter, Iterator::hasNext, UnaryOperator.identity()).map(Iterator::next).toList(); 
     }
 
+	private int c = 0;
     @Override
     public <X> Parser<X> fromGraph(X x0, Set<Pair<X, X>> transitions, Set<X> acceptanceInputs) {
+		
+		return iter -> {
+			c = 0;
+			System.out.println(c);
+			return fromGraphRecursive(x0, transitions, acceptanceInputs).accept(iter);
+		};
         // TODO Auto-generated method stub
-        return null;
+        
+        
     }
+    
+    private <X> Parser<X> fromGraphRecursive(X x0, Set<Pair<X, X>> transitions, Set<X> acceptanceInputs) {
+		
+        var matched = transitions.stream().filter(p -> p.getX().equals(x0)).map(Pair::getY).collect(Collectors.toSet());
+        System.out.println("GRAPH: x0 → " + x0 + "; count → " + c + "; matched → " + matched);
+        return recursive(x -> 
+				Optional.of(matched)
+					.filter(m -> m.stream().anyMatch(p -> p.equals(x)))
+					.map(t -> {
+						c += Optional.of(x).filter(acceptanceInputs::contains).map(s -> 1).orElse(0);
+						return fromGraphRecursive(x, transitions, acceptanceInputs); 
+					}) ,
+				c == 1
+			);
+	}
 
     @Override
     public <X> Parser<X> fromIteration(X x0, Function<X, Optional<X>> next) {
-        // TODO Auto-generated method stub
-        return null;
+        return recursive(p -> 
+				Optional.of(x0)
+					.filter(x -> x.equals(p))
+					.flatMap(q -> next.apply(q).map(v -> fromIteration(v, next))),
+				next.apply(x0).isPresent()
+			);
     }
 
     @Override
     public <X> Parser<X> recursive(Function<X, Optional<Parser<X>>> nextParser, boolean isFinal) {
-        return new Parser<>(){
-
-            @Override
-            public boolean accept(Iterator<X> iterator) {
-                if (!iterator.hasNext()){
-                    return isFinal;
-                }
-                Optional<Parser<X>> applied = nextParser.apply(iterator.next());
-                Optional<Boolean> verified = applied.map(new Function<Parser<X>,Boolean>() {
-
-                    @Override
-                    public Boolean apply(Parser<X> t) {
-                        return t.accept(iterator);
-                    }
-                    
-                });
-                return verified.orElse(false);
-                
-            }
-        };
+		
+        return iter -> {
+			
+			if(!iter.hasNext()) {
+				return isFinal;
+			}
+			X val = iter.next();
+			System.out.println("Current: " + val + "; hasNext() → " + iter.hasNext());
+			return nextParser.apply(val).map(p -> p.accept(iter)).orElse(!iter.hasNext());	
+		};
         
     }
 
     @Override
     public <X> Parser<X> fromParserWithInitial(X x, Parser<X> parser) {
-        return null;
+        return recursive(p -> Optional.of(parser).filter(pa -> p.equals(x)), false);
     }
     
 }
+

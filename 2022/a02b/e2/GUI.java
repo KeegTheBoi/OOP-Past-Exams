@@ -2,7 +2,6 @@ package a02b.e2;
 
 import javax.swing.*;
 
-import a03b.e2.ModelloImpl;
 
 import java.util.*;
 import java.util.List;
