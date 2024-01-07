@@ -28,7 +28,7 @@ public class SimpleTrace<X> implements Trace<X>{
     }
 
     private Stream<Event<X>> consumeElements(Iterator<Event<X>> iter) {
-        return Stream.iterate(iter, i -> i.hasNext(), UnaryOperator.identity()).map(f -> f.next());
+        return Stream.iterate(iter, Iterator::hasNext, UnaryOperator.identity()).map(Iterator::next);
     }
 
     @Override
