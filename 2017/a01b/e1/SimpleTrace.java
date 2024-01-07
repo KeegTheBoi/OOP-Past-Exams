@@ -19,7 +19,7 @@ public class SimpleTrace<X> implements Trace<X>{
 
     @Override
     public Optional<Event<X>> nextEvent() {
-        return !this.iterator.hasNext() ? Optional.empty() : Optional.of(iterator.next());
+        return Optional.of(iterator).filter(Iterator::hasNext).map(Iterator::next);
     }
 
     @Override
