@@ -32,7 +32,7 @@ public class Test {
 	
 	@org.junit.Before
 	public void initFactory() {
-		// this.factory = new SequencesProvidersFactoryImpl();
+		this.factory = new SequencesProvidersFactoryImpl();
 	}
 
 	@org.junit.Test
@@ -102,8 +102,11 @@ public class Test {
 		final SequencesProvider<Integer> sp = this.factory.iterative(10);
 		assertEquals(sp.nextSequence(),List.of());
 		assertEquals(sp.nextSequence(),List.of(10));
+		System.out.println("resetting [hh] \n");
 		sp.reset();
+		System.out.println("resetting [done]");
 		assertEquals(sp.nextSequence(),List.of());
+		System.out.println("resetting [01]");
 		assertEquals(sp.nextSequence(),List.of(10));
 		assertEquals(sp.nextSequence(),List.of(10,10));		
 	}
