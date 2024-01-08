@@ -32,7 +32,7 @@ public class Test {
 	
 	@org.junit.Before
 	public void initFactory() {
-		// this.factory = new SequencesProvidersFactoryImpl();
+		this.factory = new SequencesProvidersFactoryImpl();
 	}
 
 	@org.junit.Test
