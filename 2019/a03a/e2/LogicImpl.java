@@ -28,16 +28,11 @@ public class LogicImpl implements Logic {
 	private final int size;
 	private final Map<Coord, Type> map;
 	private Direction dire = Direction.UP;
-	private Coord moving;
+	private Coord moving = new Coord(0, 0);
 	
 	public LogicImpl(final int size) {
 		this.size = size;
 		this.map = new HashMap<>();
-		init();
-	}
-	
-	private void init() {
-		this.moving = new Coord(0, 0);
 		map.put(this.moving, Type.Moving);
 	}
 	
@@ -53,18 +48,11 @@ public class LogicImpl implements Logic {
 	public void move() {
 		this.map.remove(this.moving);
 		this.moving = getNext();
-		Optional.of(map).filter(g -> !this.isOver()).ifPresent(m -> m.put(moving, Type.Moving));
+		Optional.of(this.map).filter(g -> !this.isOver()).ifPresent(m -> m.put(this.moving, Type.Moving));
 	}
 	
 	private Coord getNext() {
-		return Optional.of(this.moving).filter(this::isLimit).map(peek(x -> dire = dire.next())).map(dire::move).orElse(dire.move(this.moving));
-	}
-	
-	private <T> UnaryOperator<T> peek(Consumer<T> action) {
-		return x -> {
-			action.accept(x);
-			return x;
-		};
+		return Optional.of(this.moving).filter(Predicate.not(this::isLimit)).or(() -> {dire = dire.next(); return Optional.of(this.moving);}).map(dire::move).get();
 	}
 	
 	public boolean isOver() {
