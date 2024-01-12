@@ -9,16 +9,20 @@ import java.util.stream.Stream;
 
 public class PatternExtractorFactoryImpl implements PatternExtractorFactory {
 
-
+    private int delta = 0;
     private <T, O> PatternExtractor<T, O> general(Function<Stream<T>, O> sup, Predicate<T> predicate){
-        return input -> Stream.iterate(
-                input.stream(),
-                    f -> !f.isEmpty(),
-                    s-> s.dropWhile(predicate.negate())
-                            .takewhile(predicate)
-                ).map(sup)
-                .collect(Collectors.toList()));
-            
+        delta = 0;
+        return input -> Stream.iterate(0, k -> k < input.size(), p -> p + delta)
+                .map(i -> 
+                    input.stream()
+                    .skip(i)
+                    .takeWhile(predicate)
+                    .peek(System.out::println)
+                    .toList()
+                ).peek(u -> delta = u.size() + 1)
+                .map(List::stream)
+                .map(sup)
+                .toList();
     }
 
     @Override

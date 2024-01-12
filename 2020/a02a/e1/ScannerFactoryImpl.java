@@ -1,14 +1,14 @@
 package a02a.e1;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.IntPredicate;
-import java.util.function.Predicate;
-import java.util.stream.Collector;
+import java.util.function.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class ScannerFactoryImpl implements ScannerFactory {
@@ -31,8 +31,15 @@ public class ScannerFactoryImpl implements ScannerFactory {
     public Scanner<Integer, Optional<Integer>> maximalPrefix() {
         return input -> {
             var list = toStream(input).collect(Collectors.toList());
-            IntStream.range(0, list.size()).dropWhile(i-> list.toStream().limit(i).allMatch(y-> y <= list.get(i))).map(List::get).findFirst();
-        }
+            return IntStream.range(0, list.size())
+                .takeWhile(i-> 
+                    list.stream()
+                    .limit(i)
+                    .allMatch(y -> y <= list.get(i))
+                )
+                .mapToObj(list::get)
+                .max(Comparator.comparingInt(Integer::intValue));
+        };
     }
 
     @Override

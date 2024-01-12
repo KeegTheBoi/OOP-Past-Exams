@@ -3,9 +3,10 @@ package a02c.e1;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Predicate;
+import java.util.Optional;
+import java.util.function.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.stream.*;
 
 public class ListSplitterFactoryImpl implements ListSplitterFactory {
 
@@ -20,7 +21,7 @@ public class ListSplitterFactoryImpl implements ListSplitterFactory {
         
         @Override
         public List<List<X>> split (List<X> list) {
-            Predicate<Intger> pred = i -> bipred.test(list, i);
+            Predicate<Integer> pred = i -> bipred.test(list, i);
             return Stream.iterate(0, d -> d < list.size(), i -> i + delta)
                 .map (k -> 
                     Optional.of(sequence(k, list, pred))
@@ -31,11 +32,11 @@ public class ListSplitterFactoryImpl implements ListSplitterFactory {
                 .collect(Collectors.toList());
         }
 
-        private List<X> sequence(final int offset, final List<X> list) {
+        private List<X> sequence(final int offset, final List<X> list, Predicate<Integer> pred) {
             return IntStream.range(0, list.size()).boxed().skip(offset).takeWhile(pred).map(list::get).collect(Collectors.toList());
         }
 
-        private static ListSplitter<X> splitFixed(final int dividend) {
+        private static <X> ListSplitter<X> splitFixed(final int dividend) {
             return list -> IntStream.range(0, list.size() / dividend)
                 .mapToObj(y -> list.stream().skip(dividend * y).limit(dividend).collect(Collectors.toList()))
                 .collect(Collectors.toList());
